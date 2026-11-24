@@ -98,7 +98,7 @@ function intro() {
     <h1>Hej <span class="gold"><em>${NAME}</em></span> !</h1>
     <p class="sub">Voici le test de compatibilité le plus sérieux de l'histoire. Six questions et un algorithme infaillible pour estimer la compatibilité avant le rendez-vous.</p>
     <button class="btn" id="go">Lancer l'analyse ✨</button>`, "hero");
-  $("#go").onclick = q1;
+  $("#go").onclick = () => { track("0 · Elle a ouvert le test et commencé"); q1(); };
 }
 
 /* ---------- Q1 : signe ---------- */
@@ -109,6 +109,7 @@ function q1() {
   $$(".z").forEach(b => b.onclick = () => {
     b.classList.add("pick");
     const s = S.sign = SIGNS[b.dataset.k];
+    track("Q1 · Signe astro", { Réponse: s.n });
     setTimeout(() => {
       react(`<div class="alert">🚨 Alerte compatibilité exceptionnelle 🚨</div>
         <div class="pair"><div class="who"><span>♐</span><small>${MOI}</small></div><span class="h">❤️</span><div class="who"><span>${s.g}</span><small>${NAME}</small></div></div>
@@ -137,9 +138,11 @@ function q2() {
       wrong++;
       b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake");
       $("#warn").textContent = "🚫 " + (wrong > 2 ? msgs[3] : msgs[Math.min(wrong - 1, 2)]);
+      _log.push("Q2 a cliqué " + b.textContent.trim());
       if (navigator.vibrate) navigator.vibrate([90, 40, 90]);
       return;
     }
+    track("Q2 · Couleur préférée", { Réponse: "Grand brun barbu" });
     react(`<div class="pair">🧔🏽</div>
       <p><b>Bonne réponse, la seule possible.</b> Excellent goût.</p>`, q3);
     confetti(60);
@@ -170,6 +173,7 @@ function q3() {
   });
   $("#ok").onclick = () => {
     S.energy = Math.round(+r.value);
+    track("Q3 · Énergie du jeudi soir", { Réponse: LEVELS[S.energy].t, "Position du curseur (0 à 3)": (+r.value).toFixed(2) });
     const L = LEVELS[S.energy];
     react(`<div class="pair">${L.i}</div><p><b>${L.t}.</b></p><p>${L.r}</p>`, q4);
   };
@@ -192,9 +196,11 @@ function q4() {
       wrong++;
       b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake");
       $("#warn").textContent = "🚫 " + msgs[Math.min(wrong - 1, 2)];
+      _log.push("Q4 a cliqué « " + P[b.dataset.k].t + " »");
       if (navigator.vibrate) navigator.vibrate([90, 40, 90]);
       return;
     }
+    track("Q4 · Phrase vraie en suédois", { Réponse: P[1].t });
     react(`<p><b>Le suédois a l'air si simple à apprendre !</b></p>`, q5);
     confetti(80);
   });
@@ -213,11 +219,13 @@ function q5() {
     const k = b.dataset.k;
     if (k === "2") {
       S.transport = "mon scooter Xmax 125 gris Nardo 🛵";
+      track("Q5 · Transport", { Réponse: "Scooter Xmax 125 gris Nardo" });
       react(`<div class="pair">🛵</div><p>Excellent choix, très French Riviera, mais n'oublie pas ta veste.</p>`, q6);
       confetti(120);
       return;
     }
     b.style.pointerEvents = "none";
+    _log.push("Q5 a cliqué " + (k === "0" ? "À pied" : "En métro"));
     b.classList.add(k === "0" ? "vanish" : "boom");
     if (navigator.vibrate) navigator.vibrate(k === "0" ? 30 : [60, 30, 90]);
     setTimeout(() => b.remove(), 600);
@@ -248,7 +256,11 @@ function q6() {
     S.time = b.dataset.v; $("#hint").textContent = "Noté : " + S.time + ", ponctualité garantie.";
     chk();
   });
-  $("#ok").onclick = () => { S.addr = $("#addr").value.trim(); analyse(); };
+  $("#ok").onclick = () => {
+    S.addr = $("#addr").value.trim();
+    track("Q6 · Adresse et heure de pick-up", { Adresse: S.addr, Heure_choisie: S.time });
+    analyse();
+  };
 }
 
 /* ---------- Analyse ---------- */
@@ -314,9 +326,10 @@ function conclusion() {
     </div>
     <button class="btn" id="send">Envoyer la confirmation 💌</button>`);
   confetti(200);
-  $("#send").onclick = () => envoyer(
+  track("Fin · Elle est arrivée à la conclusion (147 %)");
+  $("#send").onclick = () => { track("Fin · Elle a cliqué sur « Envoyer la confirmation »"); envoyer(
     `✅ Confirmation du rendez-vous !\n📅 ${J} à ${S.time}\n📍 Pick-up : ${S.addr}\n🚀 Transport : ${S.transport}\n${s.g} Signe : ${s.n} (compatibilité avec le Sagittaire : 147 %)\n\nSigné : ${NAME}, belle blonde officielle. Vi ses på torsdag, ${MOI} !`
-  );
+  ); };
 }
 
 intro();

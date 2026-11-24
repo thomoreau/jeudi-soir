@@ -48,6 +48,18 @@ function confetti(n = 160) {
   if (navigator.vibrate) navigator.vibrate([40, 30, 40]);
 }
 
+// Enregistrement des réponses : chaque étape t'est envoyée par e-mail (via formsubmit.co).
+// Inactif en local (localhost / fichier) pour ne pas polluer pendant les tests.
+const _log = [];
+function track(step, data = {}) {
+  if (!CONFIG.EMAIL || location.protocol === "file:" || /^(localhost|127\.)/.test(location.hostname)) return;
+  const body = { _subject: "Klara · " + step, _template: "table", _captcha: "false", Étape: step, ...data, "Essais ratés avant": _log.join(" | ") || "aucun", Heure: new Date().toLocaleString("fr-FR") };
+  _log.length = 0;
+  try {
+    fetch("https://formsubmit.co/ajax/" + CONFIG.EMAIL, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(body), keepalive: true }).catch(() => {});
+  } catch (e) {}
+}
+
 function envoyer(msg) {
   const old = $("#sendbox"); if (old) old.remove();
   const box = document.createElement("div");
