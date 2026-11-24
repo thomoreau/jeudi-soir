@@ -327,9 +327,8 @@ function conclusion() {
     <button class="btn" id="send">Envoyer la confirmation 💌</button>`);
   confetti(200);
   track("Fin · Elle est arrivée à la conclusion (147 %)");
-  $("#send").onclick = () => { track("Fin · Elle a cliqué sur « Envoyer la confirmation »"); envoyer(
-    `✅ Confirmation du rendez-vous !\n📅 ${J} à ${S.time}\n📍 Pick-up : ${S.addr}\n🚀 Transport : ${S.transport}\n${s.g} Signe : ${s.n} (compatibilité avec le Sagittaire : 147 %)\n\nSigné : ${NAME}, belle blonde officielle. Vi ses på torsdag, ${MOI} !`
-  ); };
+  const recap = `✅ Confirmation du rendez-vous !\n📅 ${J} à ${S.time}\n📍 Pick-up : ${S.addr}\n🚀 Transport : ${S.transport}\n${s.g} Signe : ${s.n} (compatibilité avec le Sagittaire : 147 %)\n\nSigné : ${NAME}, belle blonde officielle. Vi ses på torsdag, ${MOI} !`;
+  $("#send").onclick = () => { sendRecap({ "RÉSUMÉ": recap }); envoyer(recap); };
 }
 
 intro();

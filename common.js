@@ -52,11 +52,21 @@ function confetti(n = 160) {
 // Inactif en local (localhost / fichier) pour ne pas polluer pendant les tests.
 const W3F_KEY = "891a4803-9d12-4b21-8b51-e94873bcd39b";
 const _log = [];
+// track() note chaque étape en mémoire ; rien n'est envoyé avant sendRecap().
+const _steps = [];
 function track(step, data = {}) {
-  if (!CONFIG.EMAIL || location.protocol === "file:" || /^(localhost|127\.)/.test(location.hostname)) return;
-  const body = { _subject: "Klara · " + step, _template: "table", _captcha: "false", Étape: step, ...data, "Essais ratés avant": _log.join(" | ") || "aucun", Heure: new Date().toLocaleString("fr-FR") };
-  const mail = { access_key: W3F_KEY, subject: "Klara · " + step, from_name: "Site jeudi", botcheck: "", ...body };
+  _steps.push({ step, data, fails: _log.join(" | "), at: new Date().toLocaleTimeString("fr-FR") });
   _log.length = 0;
+}
+// Envoie UN seul e-mail récapitulatif (appelé quand elle valide le rendez-vous).
+function sendRecap(extra = {}) {
+  if (!CONFIG.EMAIL || location.protocol === "file:" || /^(localhost|127\.)/.test(location.hostname)) return;
+  if (sendRecap.done) return; sendRecap.done = true;
+  const mail = { access_key: W3F_KEY, subject: "✅ Klara a validé le rendez-vous !", from_name: "Site jeudi", botcheck: "", ...extra };
+  _steps.forEach(s => {
+    const det = Object.entries(s.data).map(([k, v]) => k + " : " + v).join(" · ");
+    mail[s.step] = (det || "ok") + (s.fails ? "  (essais ratés : " + s.fails + ")" : "") + "  [" + s.at + "]";
+  });
   try {
     fetch("https://api.web3forms.com/submit", { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(mail), keepalive: true }).catch(() => {});
   } catch (e) {}
