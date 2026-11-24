@@ -61,7 +61,7 @@ function track(step, data = {}) {
 // Envoie UN seul e-mail récapitulatif (appelé quand elle valide le rendez-vous).
 function sendRecap(extra = {}) {
   if (!CONFIG.EMAIL || location.protocol === "file:" || /^(localhost|127\.)/.test(location.hostname)) return;
-  if (sendRecap.done) return; sendRecap.done = true;
+  if (Date.now() - (sendRecap.last || 0) < 20000) return; sendRecap.last = Date.now();
   const mail = { access_key: W3F_KEY, subject: "✅ Klara a validé le rendez-vous !", from_name: "Site jeudi", botcheck: "", ...extra };
   _steps.forEach(s => {
     const det = Object.entries(s.data).map(([k, v]) => k + " : " + v).join(" · ");
