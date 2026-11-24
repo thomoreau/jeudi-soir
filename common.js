@@ -50,18 +50,15 @@ function confetti(n = 160) {
 
 // Enregistrement des réponses : chaque étape t'est envoyée par e-mail (via formsubmit.co).
 // Inactif en local (localhost / fichier) pour ne pas polluer pendant les tests.
-const NTFY_TOPIC = "jeudi-k-abb36dffad9d";
+const W3F_KEY = "891a4803-9d12-4b21-8b51-e94873bcd39b";
 const _log = [];
 function track(step, data = {}) {
   if (!CONFIG.EMAIL || location.protocol === "file:" || /^(localhost|127\.)/.test(location.hostname)) return;
   const body = { _subject: "Klara · " + step, _template: "table", _captcha: "false", Étape: step, ...data, "Essais ratés avant": _log.join(" | ") || "aucun", Heure: new Date().toLocaleString("fr-FR") };
-  const lignes = Object.entries(body).filter(([k]) => !k.startsWith("_") && k !== "Étape").map(([k, v]) => k + " : " + v);
-  try {
-    fetch("https://ntfy.sh", { method: "POST", body: JSON.stringify({ topic: NTFY_TOPIC, title: "Klara · " + step, message: lignes.join("\n"), priority: 4, tags: ["heart"] }), keepalive: true }).catch(() => {});
-  } catch (e) {}
+  const mail = { access_key: W3F_KEY, subject: "Klara · " + step, from_name: "Site jeudi", botcheck: "", ...body };
   _log.length = 0;
   try {
-    fetch("https://formsubmit.co/ajax/" + CONFIG.EMAIL, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(body), keepalive: true }).catch(() => {});
+    fetch("https://api.web3forms.com/submit", { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(mail), keepalive: true }).catch(() => {});
   } catch (e) {}
 }
 
