@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#05060f">
+<title>Le Grand Prix de Klara</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,400;0,600;0,700;0,900;1,700;1,900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="gp.css?v=1">
+</head>
+<body>
+<canvas id="world" aria-hidden="true"></canvas>
+<div class="shade" aria-hidden="true"></div>
+<div class="app">
+  <header class="hud hide" id="hud">
+    <div class="bar"><span id="day"></span><b id="chrono"></b></div>
+    <div class="laps" id="laps"><i></i><i></i><i></i><i></i></div>
+  </header>
+  <main id="stage" aria-live="polite"></main>
+</div>
+<canvas id="fx" aria-hidden="true"></canvas>
+<div id="wipe" aria-hidden="true"></div>
+<div id="flash" aria-hidden="true"></div>
+<button id="mute" aria-label="Couper ou remettre le son">🔊</button>
+<script src="common.js?v=1"></script>
+<script src="world.js?v=1"></script>
+<script src="gp.js?v=1"></script>
+</body>
+</html>
